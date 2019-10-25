@@ -21,7 +21,8 @@ export function addTask(task, addComplete) {
       name: task.name,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     })
-    .then(data => addComplete(data))
+    .then(snapshot => snapshot.get())
+    .then(taskData => addComplete(taskData.data()))
     .catch(error => console.log(error));
 }
 
@@ -37,5 +38,6 @@ export async function getTask(taskReceived) {
   snapshot.forEach(doc => {
     itemList.push(doc.data());
   });
+
   taskReceived(itemList);
 }

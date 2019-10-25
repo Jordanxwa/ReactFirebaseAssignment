@@ -16,11 +16,13 @@ export default class App extends React.Component {
     toDoList: [],
     currentListItem: null
   };
+
   // console log the list item when added
   onListItemAdded = item => {
     console.log('List Item Added!');
     console.log(item);
   };
+
   // a callback informing i've received the toDoList from firebase
   onListItemReceived = toDoList => {
     console.log(toDoList);
