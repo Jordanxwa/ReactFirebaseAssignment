@@ -1,94 +1,122 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { StyleSheet, Text, View, StatusBar, ListView } from 'react-native';
 import {
-  StyleSheet,
-  Text,
-  View,
+  Container,
+  Content,
+  Header,
+  Form,
+  Input,
+  Item,
   Button,
-  TextInput,
-  FlatList,
-  SafeAreaView
-} from 'react-native';
-import { ListItem, Divider } from 'react-native-elements';
-import { addTask, getTask } from './tasks/tasks.js';
+  Label,
+  Icon,
+  List,
+  ListItem
+} from 'native-base';
+
+import firebase from './firebase';
+
+var data = [];
 
 export default class App extends React.Component {
-  state = {
-    toDoList: [],
-    currentListItem: null
-  };
+  constructor(props) {
+    super(props);
 
-  // console log the list item when added
-  onListItemAdded = item => {
-    console.log('List Item Added!');
-    console.log(item);
-  };
+    this.ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
 
-  // a callback informing i've received the toDoList from firebase
-  onListItemReceived = toDoList => {
-    console.log(toDoList);
-    this.setState(prevState => ({
-      toDoList: (prevState.toDoList = toDoList)
-    }));
-  };
+    this.state = {
+      listViewData: data,
+      newTask: ''
+    };
+  }
 
   componentDidMount() {
-    getTask(this.onListItemReceived);
+    var that = this;
+
+    firebase
+      .database()
+      .ref('/tasks')
+      .on('child_added', function(data) {
+        var newData = [...that.state.listViewData];
+        newData.push(data);
+        that.setState({ listViewData: newData });
+      });
   }
+
+  addRow(data) {
+    var key = firebase
+      .database()
+      .ref('/tasks')
+      .push().key;
+    firebase
+      .database()
+      .ref('/tasks')
+      .child(key)
+      .set({ name: data });
+  }
+
+  deleteRow() {}
+
+  showInfo() {}
 
   render() {
     return (
-      <SafeAreaView>
-        <View style={styles.row}>
-          <TextInput
-            style={styles.input}
-            placeholder='Add Task'
-            value={this.state.currentListItem}
-            onChangeText={text =>
-              this.setState(prevState => ({
-                currentListItem: (prevState.currentListItem = text)
-              }))
-            }
+      <Container style={styles.container}>
+        <Header style={{ marginTop: StatusBar.currentHeight }}>
+          <Content>
+            <Item>
+              <Input
+                onChangeText={newTask => this.setState({ newTask })}
+                placeholder='Add Something'
+                style={styles.inputStyle}
+              />
+              <Button onPress={() => this.addRow(this.state.newTask)}>
+                <Icon name='add' />
+              </Button>
+            </Item>
+          </Content>
+        </Header>
+        <Content>
+          <List
+            enableEmptySections
+            dataSource={this.ds.cloneWithRows(this.state.listViewData)}
+            rednerRow={data => (
+              <ListItem>
+                <Text>{data.val().name}</Text>
+              </ListItem>
+            )}
+            renderLeftHiddenRow={data => (
+              <Button full onPress={() => this.addRow(data)}>
+                <Icon name='information-circle' />
+              </Button>
+            )}
+            renderRightHiddenRow={(data, secId, rowId, rowMap) => (
+              <Button
+                full
+                danger
+                onPress={() => this.deleteRow(data, secId, rowId, rowMap)}
+              >
+                <Icon name='trash' />
+              </Button>
+            )}
+            leftOpenValue={-75}
+            rightOpenValue={-75}
           />
-          <View style={{ marginTop: 45, marginRight: 15 }}>
-            <Button
-              title='Submit'
-              onPress={() =>
-                addTask(
-                  {
-                    name: this.state.currentListItem
-                  },
-                  this.onListItemAdded
-                )
-              }
-            />
-          </View>
-        </View>
-
-        <FlatList
-          data={this.state.toDoList}
-          ItemSeparatorComponent={() => (
-            <Divider style={{ backgroundColor: 'black' }} />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => {
-            console.log(item);
-            return <ListItem title={item.name} onPress={() => {}} />;
-          }}
-        />
-      </SafeAreaView>
+        </Content>
+      </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  input: {
+  container: {
     flex: 1,
-    paddingLeft: 16,
-    fontSize: 16,
-    marginTop: 45
+    backgroundColor: '#fff'
+  },
+  inputStyle: {
+    backgroundColor: '#f4f4f4',
+    color: '#000'
   }
 });

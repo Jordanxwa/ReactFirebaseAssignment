@@ -1,15 +1,14 @@
 import * as firebase from 'firebase';
-import '@firebase/firestore';
 
 // Initialize Firebase
 var firebaseConfig = {
-  apiKey: 'AIzaSyAdg845RaKUaElk8paiPVF5k6K5lwQ8Fxk',
-  authDomain: 'reactfirebaseassignment-3af19.firebaseapp.com',
-  databaseURL: 'https://reactfirebaseassignment-3af19.firebaseio.com',
-  projectId: 'reactfirebaseassignment-3af19',
-  storageBucket: 'reactfirebaseassignment-3af19.appspot.com',
-  messagingSenderId: '652934914254',
-  appId: '1:652934914254:web:c0b2d898fa4f0e7c51309f'
+  apiKey: 'AIzaSyAGFHW_RJWb2IEZuPoF3wBMaK7h18Xmv6M',
+  authDomain: 'reactnative-firebase-2363c.firebaseapp.com',
+  databaseURL: 'https://reactnative-firebase-2363c.firebaseio.com',
+  projectId: 'reactnative-firebase-2363c',
+  storageBucket: 'reactnative-firebase-2363c.appspot.com',
+  messagingSenderId: '328266218292',
+  appId: '1:328266218292:web:e401f60471fa79495cc361'
 };
 
 firebase.initializeApp(firebaseConfig);
