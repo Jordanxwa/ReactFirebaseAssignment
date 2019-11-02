@@ -14,4 +14,4 @@ CLI Instillation Instructions: I installed CLI through these steps:
 4. npm install firebase --save
 5. npm install react-native-gifted-chat
 
-Starting the CLI: To start the cli just type "expo start" then scan the QR code (using Tunnel) with your phone (through Android means
+Starting the CLI: To start the cli just type "expo start" then scan the QR code (using Tunnel) with your phone (through Android means.
