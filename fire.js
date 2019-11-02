@@ -1,6 +1,7 @@
-import * as firebase from 'firebase';
+import firebase from 'firebase';
 
-class firebase {
+// Initialize then call function
+class fire {
   constructor() {
     this.init();
     this.observeAuth();
@@ -13,13 +14,13 @@ class firebase {
       databaseURL: 'https://reactnative-firebase-2363c.firebaseio.com',
       projectId: 'reactnative-firebase-2363c',
       storageBucket: 'reactnative-firebase-2363c.appspot.com',
-      messagingSenderId: '328266218292',
-      appId: '1:328266218292:web:e401f60471fa79495cc361'
+      messagingSenderId: '328266218292'
     });
 
   observeAuth = () =>
     firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
 
+  // If user anon sign in fails an error message will pop up
   onAuthStateChanged = user => {
     if (!user) {
       try {
@@ -30,23 +31,23 @@ class firebase {
     }
   };
 
-  // 1.
+  // create helper for getting user's id
   get uid() {
     return (firebase.auth().currentUser || {}).uid;
   }
 
-  // 1.
   get ref() {
     return firebase.database().ref('messages');
   }
 
   parse = snapshot => {
-    // 1.
+    // deconstruct the val cna calling it to return whatever is associated with the snapshot
     const { timestamp: numberStamp, text, user } = snapshot.val();
     const { key: _id } = snapshot;
-    // 2.
+
+    // converted timestamp to JavaScript Date
     const timestamp = new Date(numberStamp);
-    // 3.
+
     const message = {
       _id,
       timestamp,
@@ -56,23 +57,23 @@ class firebase {
     return message;
   };
 
-  // 2.
+  // callback prop that gets the last 20 messages
   on = callback =>
     this.ref
       .limitToLast(20)
       .on('child_added', snapshot => callback(this.parse(snapshot)));
-  // 3.
 
-  // 2.
+  // timestamp for saving messages
   get timestamp() {
     return firebase.database.ServerValue.TIMESTAMP;
   }
 
-  // 3.
+  // send function that will accept an array of messages, then loop through it
   send = messages => {
     for (let i = 0; i < messages.length; i++) {
       const { text, user } = messages[i];
-      // 4.
+
+      // save message to server
       const message = {
         text,
         user,
@@ -81,15 +82,16 @@ class firebase {
       this.append(message);
     }
   };
-  // 5.
+
+  // save message with unique id
   append = message => this.ref.push(message);
 
-  // 4.
+  // unsubscribe to the database
   off() {
     this.ref.off();
   }
 }
 
-firebase.shared = new firebase();
+fire.shared = new fire();
 
-export default firebase;
+export default fire;
